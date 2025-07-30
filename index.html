@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nurse AI Hub</title>
+  <style>
+    body { font-family: Arial; background: #f0f8ff; padding: 20px; }
+    .section { margin-top: 40px; padding: 20px; background: #fff; border-radius: 10px; max-width: 600px; }
+    h2 { color: #005577; }
+    input, button { padding: 8px; margin-top: 5px; width: 100%; }
+    #reply { margin-top: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+
+<div class="section">
+  <h2>💬 Ask Nurse AI</h2>
+  <input type="text" id="userInput" placeholder="Ask about drug dosage, side effects, etc..." />
+  <button onclick="sendMessage()">Ask</button>
+  <p><strong>Reply:</strong> <span id="reply"></span></p>
+</div>
+
+<script>
+  async function sendMessage() {
+    const userInput = document.getElementById('userInput').value.trim();
+    if (!userInput) return alert('Please enter a question.');
+
+    document.getElementById('reply').innerText = 'Thinking...';
+
+    try {
+      const response = await fetch('http://localhost:3000/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userInput }),
+      });
+
+      if (!response.ok) throw new Error('Server error: ' + response.status);
+
+      const data = await response.json();
+      document.getElementById('reply').innerText = data.choices[0].message.content;
+    } catch (err) {
+      document.getElementById('reply').innerText = 'Error: ' + err.message;
+    }
+  }
+</script>
+
+</body>
+</html>
